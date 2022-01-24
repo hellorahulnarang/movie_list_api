@@ -11,12 +11,6 @@ To work in a sandbox, use virtual environment(virtualenv).
    2.python manage.py migrate
    3.python manage.py runserver
    ``` 
- 2. Running tests
-   
-  ```bash
-    python manage.py test
-  ```
-  
 
 ## API Documentation 
 
@@ -120,8 +114,17 @@ movies I have added in my collections>.”
 }
 ```
 
+3. `DELETE /collection/<collection_uuid>/` 
 
-3. `PUT /collection/<collection_uuid>/` 
+
+##### `response`
+
+```json
+{"message": "Collection deleted successfully!"}
+    
+```
+
+4. `PUT /collection/<collection_uuid>/` 
 
 ```json
  application/json - {
@@ -139,14 +142,3 @@ movies I have added in my collections>.”
  “movies”: <Details of movies in my collection>
 
 }
-    
-```
-4. `DELETE /collection/<collection_uuid>/` 
-
-
-##### `response`
-
-```json
-{"message": "Collection deleted successfully!"}
-    
-```
