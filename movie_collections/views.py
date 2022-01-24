@@ -6,7 +6,8 @@ from movie_collections.utils.get_movie_list import get_movie_list
 from .serializers import MovieCollectionSerializer
 from .models import MovieCollections,Movie
 from django.db.models import Count
-
+from rest_framework.generics import ListCreateAPIView
+from user_auth.permissions import OwnerOrAdmin
 
 class ThirdPartyMovie(APIView):
     authentication_classes = [JWTAuthentication]
@@ -60,3 +61,57 @@ class MovieColletionAPI(APIView):
                 }
         })
 
+class MovieListOperation(APIView):
+    permission_classes = [IsAuthenticated, OwnerOrAdmin]
+    authentication_classes = [JWTAuthentication]
+    # serializer_class = MovieCollectionSerializer
+
+    def get_queryset(self):
+        return MovieCollections.objects.get(pk=self.kwargs['uuid'])
+
+    def get(self, request, *args, **kwargs):
+        """method for get request for  movie collection"""
+        try:
+            self.check_object_permissions(self.request, self.get_queryset())
+            instance=self.get_queryset()
+            serializer = MovieCollectionSerializer(instance)
+            return Response({
+                'collections': serializer.data
+            })
+        except MovieCollections.DoesNotExist:
+            return Response({
+                'error': 'Invalid UUID'
+            })
+
+
+    def put(self,request, *args, **kwargs):
+        try:
+            self.check_object_permissions(self.request, self.get_queryset())
+            serializer = MovieCollectionSerializer(instance=self.get_queryset(), data=request.data, partial=True)
+            if serializer.is_valid():
+                collection = serializer.update(validated_data = serializer.validated_data)
+                return Response({
+                    'collection_uuid': collection.uuid
+                })
+            return Response({
+                'error': serializer.errors
+            })
+
+        except MovieCollections.DoesNotExist:
+            return Response({
+                'error': 'Collection with given UUID does not exist'
+            })
+
+    def delete(self, request, *args, **kwargs):
+        try:
+
+            self.check_object_permissions(self.request, self.get_queryset())
+            instance= self.get_queryset()
+            instance.delete()
+            return Response({
+                'message': 'movie collection deleted successfully.'
+            })
+        except MovieCollections.DoesNotExist:
+            return Response({
+                'error': 'This UUID movie does not exist'
+            })
