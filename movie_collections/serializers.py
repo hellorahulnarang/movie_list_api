@@ -30,21 +30,6 @@ class MovieCollectionSerializer(serializers.Serializer):
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
 
-        if len(validated_data['movies']) > 0:
-            Movie.objects.filter(collection=instance).delete()
-                
-            collection_movies=list()
-            for movie in validated_data['movies']:
-                collection_movies.append(
-                    Movie(collection_name=instance, uuid=movie['uuid'], title=movie['title'], description=movie['description'], genres=movie['genres']) 
-                )
-
-                Movie.objects.bulk_create(collection_movies)
-            # popping validated_data[movies]
-            validated_data.pop('movies')
-            # PUT for movie collection
-            MovieCollections.objects.filter(pk=instance.pk).update(**validated_data)
-
         return instance
 
 

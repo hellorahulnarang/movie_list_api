@@ -89,7 +89,8 @@ class MovieListOperation(APIView):
             self.check_object_permissions(self.request, self.get_queryset())
             serializer = MovieCollectionSerializer(instance=self.get_queryset(), data=request.data, partial=True)
             if serializer.is_valid():
-                collection = serializer.update(validated_data = serializer.validated_data)
+                serializer.save()
+                collection = serializer.update(instance=self.get_queryset(), validated_data = serializer.validated_data)
                 return Response({
                     'collection_uuid': collection.uuid
                 })
@@ -104,7 +105,6 @@ class MovieListOperation(APIView):
 
     def delete(self, request, *args, **kwargs):
         try:
-
             self.check_object_permissions(self.request, self.get_queryset())
             instance= self.get_queryset()
             instance.delete()
