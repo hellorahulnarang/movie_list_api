@@ -61,7 +61,7 @@ class MovieColletionAPI(APIView):
                 }
         })
 
-class MovieListOperation(APIView):
+class MovieListOperation(ListCreateAPIView):
     permission_classes = [IsAuthenticated, OwnerOrAdmin]
     authentication_classes = [JWTAuthentication]
     # serializer_class = MovieCollectionSerializer
